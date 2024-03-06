@@ -47,10 +47,9 @@ public class UserDao {
         ConnectDatabase db = new ConnectDatabase();
         try {
             con = db.connect();
-            String query = "SELECT * FROM Music"; // Assuming "Music" is the table containing music data
+            String query = "SELECT * FROM Music";
             ResultSet rs = con.prepareStatement(query).executeQuery();
             while (rs.next()) {
-                // Assuming Music class has appropriate constructor and getters
                 list.add(new Music(rs.getInt(1), rs.getString(2), rs.getString(3), rs.getDouble(4)));
             }
         } catch (SQLException ex) {
@@ -65,6 +64,31 @@ public class UserDao {
             }
         }
         return list;
+    }
+    
+    public ArrayList<MusicCart> getMusicCart() {
+        Connection con = null;
+        ArrayList<MusicCart> cart = new ArrayList<>();
+        ConnectDatabase db = new ConnectDatabase();
+        try {
+            con = db.connect();
+            String query = "SELECT * FROM MusicCart"; 
+            ResultSet rs = con.prepareStatement(query).executeQuery();
+            while (rs.next()) {
+                cart.add(new MusicCart(rs.getInt(1), rs.getInt(2), rs.getInt(3), rs.getDouble(4)));
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(UserDao.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            try {
+                if (con != null) {
+                    con.close();
+                }
+            } catch (SQLException ex) {
+                Logger.getLogger(UserDao.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        return cart;
     }
 
     public void addUser(User u1) {
@@ -120,6 +144,40 @@ public class UserDao {
                 System.out.println("Music added successfully!");
             } else {
                 System.out.println("Failed to add music!");
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(UserDao.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            try {
+                if (stmt != null) {
+                    stmt.close();
+                }
+                if (con != null) {
+                    con.close();
+                }
+            } catch (SQLException ex) {
+                Logger.getLogger(UserDao.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }
+
+    public void addMusicCart(MusicCart mc1) {
+        Connection con = null;
+        PreparedStatement stmt = null;
+        ConnectDatabase db = new ConnectDatabase();
+        try {
+            con = db.connect();
+            String query = "INSERT INTO MusicCart (CartNum, UserID, CartItemID, TotalPrice) VALUES (?, ?, ?, ?)";
+            stmt = con.prepareStatement(query);
+            stmt.setInt(1, mc1.getCartNum());
+            stmt.setInt(2, mc1.getUserID());
+            stmt.setInt(3, mc1.getCartItemID());
+            stmt.setDouble(4, mc1.getTotalPrice());
+            int rowsAffected = stmt.executeUpdate();
+            if (rowsAffected > 0) {
+                System.out.println("Music cart added successfully!");
+            } else {
+                System.out.println("Failed to add music cart!");
             }
         } catch (SQLException ex) {
             Logger.getLogger(UserDao.class.getName()).log(Level.SEVERE, null, ex);
@@ -198,6 +256,37 @@ public class UserDao {
             }
         }
     }
+    
+    public void deleteMusicCart(int CartNum) {
+        Connection con = null;
+        PreparedStatement stmt = null;
+        ConnectDatabase db = new ConnectDatabase();
+        try {
+            con = db.connect();
+            String query = "DELETE FROM MusicCart WHERE CartNum = ?";
+            stmt = con.prepareStatement(query);
+            stmt.setInt(1, CartNum);
+            int rowsAffected = stmt.executeUpdate();
+            if (rowsAffected > 0) {
+                System.out.println("Music cart with number" + CartNum + " deleted successfully!");
+            } else {
+                System.out.println("No music cart found with number " + CartNum + " to delete.");
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(UserDao.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            try {
+                if (stmt != null) {
+                    stmt.close();
+                }
+                if (con != null) {
+                    con.close();
+                }
+            } catch (SQLException ex) {
+                Logger.getLogger(UserDao.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }
 
     public void updateUser(User u1) {
         Connection con = null;
@@ -252,6 +341,40 @@ public class UserDao {
                 System.out.println("Music updated successfully!");
             } else {
                 System.out.println("No music found with ID " + m1.getMusicID() + " to update.");
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(UserDao.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            try {
+                if (stmt != null) {
+                    stmt.close();
+                }
+                if (con != null) {
+                    con.close();
+                }
+            } catch (SQLException ex) {
+                Logger.getLogger(UserDao.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }
+    
+    public void updateMusicCart(MusicCart mc1) {
+        Connection con = null;
+        PreparedStatement stmt = null;
+        ConnectDatabase db = new ConnectDatabase();
+        try {
+            con = db.connect();
+            String query = "UPDATE MusicCart SET UserID = ?, CartItemID = ?, TotalPrice = ? WHERE CartNum = ?";
+            stmt = con.prepareStatement(query);
+            stmt.setInt(1, mc1.getCartNum());
+            stmt.setInt(2, mc1.getUserID());
+            stmt.setInt(3, mc1.getCartItemID());
+            stmt.setDouble(4, mc1.getTotalPrice());
+            int rowsAffected = stmt.executeUpdate();
+            if (rowsAffected > 0) {
+                System.out.println("Music cart updated successfully!");
+            } else {
+                System.out.println("No music cart found with number " + mc1.getCartNum()+ " to update.");
             }
         } catch (SQLException ex) {
             Logger.getLogger(UserDao.class.getName()).log(Level.SEVERE, null, ex);
