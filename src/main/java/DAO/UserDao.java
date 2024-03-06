@@ -65,14 +65,14 @@ public class UserDao {
         }
         return list;
     }
-    
+
     public ArrayList<MusicCart> getMusicCart() {
         Connection con = null;
         ArrayList<MusicCart> cart = new ArrayList<>();
         ConnectDatabase db = new ConnectDatabase();
         try {
             con = db.connect();
-            String query = "SELECT * FROM MusicCart"; 
+            String query = "SELECT * FROM MusicCart";
             ResultSet rs = con.prepareStatement(query).executeQuery();
             while (rs.next()) {
                 cart.add(new MusicCart(rs.getInt(1), rs.getInt(2), rs.getInt(3), rs.getDouble(4)));
@@ -256,7 +256,7 @@ public class UserDao {
             }
         }
     }
-    
+
     public void deleteMusicCart(int CartNum) {
         Connection con = null;
         PreparedStatement stmt = null;
@@ -357,7 +357,7 @@ public class UserDao {
             }
         }
     }
-    
+
     public void updateMusicCart(MusicCart mc1) {
         Connection con = null;
         PreparedStatement stmt = null;
@@ -374,7 +374,7 @@ public class UserDao {
             if (rowsAffected > 0) {
                 System.out.println("Music cart updated successfully!");
             } else {
-                System.out.println("No music cart found with number " + mc1.getCartNum()+ " to update.");
+                System.out.println("No music cart found with number " + mc1.getCartNum() + " to update.");
             }
         } catch (SQLException ex) {
             Logger.getLogger(UserDao.class.getName()).log(Level.SEVERE, null, ex);
